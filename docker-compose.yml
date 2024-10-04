@@ -1,0 +1,12 @@
+services:
+    app:
+        user: app
+        build:
+            context: .
+            args:
+                USER_ID: ${USER_ID:-1000}
+        volumes:
+            - ./src:/app
+
+    redis:
+        image: redis:7.0-alpine3.16
