@@ -1,23 +1,29 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\UseCase\CreateOrder;
 
+use App\Exceptions\UseCase\UseCaseException;
 use App\Models\Order;
-use App\Repository\OrderRepository;
-use App\UseCase\CreateOrder\Dto\CreateOrderDto;
-use App\UseCase\CreateOrder\Dto\CreateOrderInputDto;
+use App\Repository\Interfaces\OrderRepositoryInterface;
+use App\UseCase\CreateOrder\InputDto\CreateOrderInputDto;
+use App\UseCase\CreateOrder\OutputDto\CreateOrderDto;
 use App\Value\OrderId;
 use Illuminate\Support\Str;
 
 final readonly class CreateOrderUseCase
 {
     public function __construct(
-        private OrderRepository $orderRepository,
-        private Str $str,
+        private OrderRepositoryInterface $orderRepository,
+        private Str                      $str,
     )
     {
     }
 
+    /**
+     * @throws UseCaseException
+     */
     public function execute(CreateOrderInputDto $dto): CreateOrderDto
     {
         $id = new OrderId($this->str->uuid()->toString());
@@ -28,8 +34,12 @@ final readonly class CreateOrderUseCase
             lineItems: $dto->lineItems,
         );
 
-        $this->orderRepository->save($order);
+        try {
+            $this->orderRepository->save($order);
+        } catch (\Throwable $e) {
+            throw new UseCaseException('Ошибка при сохранении заказа', UseCaseException::CODE_SERVER_ERROR, $e);
+        }
 
-        return new CreateOrderDto($id->value);
+        return new CreateOrderDto(id: $id);
     }
 }

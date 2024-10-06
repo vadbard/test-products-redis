@@ -2,12 +2,12 @@
 
 declare(strict_types = 1);
 
-namespace Raketa\BackendTestTask\Exception\Repository;
+namespace App\Exceptions\Repository;
 
 class RepositoryException extends \Exception
 {
-    const NOT_FOUND = 1001;
-    const NOT_SAVED = 1002;
+    const int NOT_FOUND = 1001;
+    const int NOT_SAVED = 1002;
 
     public function __construct(string $message = '', int $code = 0, \Throwable $previous = null)
     {

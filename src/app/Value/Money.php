@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Value;
 
 readonly class Money implements \JsonSerializable
@@ -13,7 +15,9 @@ readonly class Money implements \JsonSerializable
 
     public static function fromFloat(float $amount): self
     {
-        return new self($amount * 100);
+        $amount = $amount * 100;
+
+        return new self((int) $amount);
     }
 
     public function float() : float

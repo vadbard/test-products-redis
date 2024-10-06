@@ -1,27 +1,36 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\UseCase\GetOrder;
 
 use App\Exceptions\UseCase\UseCaseException;
-use App\Repository\OrderRepository;
+use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\UseCase\GetOrder\InputDto\GetOrderInputDto;
 use App\UseCase\GetOrder\OutputDto\GetOrderDto;
 use App\UseCase\GetOrder\OutputDto\LineItemDto;
 
-class GetOrderUseCase
+final readonly class GetOrderUseCase
 {
     public function __construct(
-        private OrderRepository $orderRepository,
+        private OrderRepositoryInterface $orderRepository,
     )
     {
     }
 
+    /**
+     * @throws UseCaseException
+     */
     public function execute(GetOrderInputDto $dto): GetOrderDto
     {
-        $order = $this->orderRepository->findOneById($dto->orderId);
+        try {
+            $order = $this->orderRepository->findOneById($dto->orderId);
+        } catch (\Throwable $e) {
+            throw new UseCaseException('Ошибка при получении заказа', UseCaseException::CODE_SERVER_ERROR, $e);
+        }
 
         if (is_null($order)) {
-            throw new UseCaseException('Order not found', 404, null);
+            throw new UseCaseException('Заказ не найден', UseCaseException::CODE_NOT_FOUND, null);
         }
 
         $items = [];

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Console\Commands;
 
+use App\Console\Commands\Traits\ConsoleErrorTrait;
 use App\Exceptions\UseCase\UseCaseException;
 use App\UseCase\GetOrder\GetOrderUseCase;
 use App\UseCase\GetOrder\InputDto\GetOrderInputDto;
@@ -12,6 +15,8 @@ use function Laravel\Prompts\table;
 
 class GetOrderCommand extends Command
 {
+    use ConsoleErrorTrait;
+
     protected $signature = 'order:show {orderId}';
 
     public function handle(GetOrderUseCase $useCase)
@@ -22,13 +27,13 @@ class GetOrderCommand extends Command
             $dto = $useCase->execute(new GetOrderInputDto(
                 orderId: new OrderId($orderId),
             ));
-
-            $this->view($dto);
         } catch (UseCaseException $e) {
-            $this->error($e->getMessage());
+            $this->useCaseException($e);
         } catch (\Exception $e) {
-            $this->error('Произошла странная ошибка');
+            $this->unknownException($e);
         }
+
+        $this->view($dto);
     }
 
     private function view(GetOrderDto $dto): void

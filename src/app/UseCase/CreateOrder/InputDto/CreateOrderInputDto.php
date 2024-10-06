@@ -1,6 +1,8 @@
 <?php
 
-namespace App\UseCase\CreateOrder\Dto;
+declare(strict_types = 1);
+
+namespace App\UseCase\CreateOrder\InputDto;
 
 use App\Value\LineItem;
 

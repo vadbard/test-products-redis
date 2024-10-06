@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Console\Commands;
 
+use App\Console\Commands\Traits\ConsoleErrorTrait;
+use App\Exceptions\UseCase\UseCaseException;
 use App\UseCase\GetOrderList\GetOrderListUseCase;
 use App\UseCase\GetOrderList\OutputDto\OrderListDto;
 use Illuminate\Console\Command;
@@ -9,11 +13,19 @@ use function Laravel\Prompts\table;
 
 class ListOrdersCommand extends Command
 {
+    use ConsoleErrorTrait;
+
     protected $signature = 'order:list';
 
     public function handle(GetOrderListUseCase $useCase)
     {
-        $dto = $useCase->execute();
+        try {
+            $dto = $useCase->execute();
+        } catch (UseCaseException $e) {
+            $this->useCaseException($e);
+        } catch (\Exception $e) {
+            $this->unknownException($e);
+        }
 
         $this->view($dto);
     }

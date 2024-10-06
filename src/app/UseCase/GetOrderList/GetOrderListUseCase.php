@@ -1,23 +1,35 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\UseCase\GetOrderList;
 
-use App\Repository\OrderRepository;
+use App\Exceptions\UseCase\UseCaseException;
+use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\UseCase\GetOrderList\OutputDto\OrderListDto;
 use App\UseCase\GetOrderList\OutputDto\OrderListItemDto;
 
-class GetOrderListUseCase
+final readonly class GetOrderListUseCase
 {
     public function __construct(
-        private readonly OrderRepository $orderRepository,
+        private OrderRepositoryInterface $orderRepository,
     )
     {
     }
 
+    /**
+     * @throws UseCaseException
+     */
     public function execute(): OrderListDto
     {
+        try {
+            $orders = $this->orderRepository->findAll();
+        } catch (\Throwable $e) {
+            throw new UseCaseException('Ошибка при получении заказов', UseCaseException::CODE_SERVER_ERROR, $e);
+        }
+
         $result = [];
-        foreach ($this->orderRepository->findAll() as $order) {
+        foreach ($orders as $order) {
             $result[] = new OrderListItemDto(
                 id: $order->getId()->value,
                 createdAt: $order->getCreatedAt()->format('Y-m-d H:i:s'),

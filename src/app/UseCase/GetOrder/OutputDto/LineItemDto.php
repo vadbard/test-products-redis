@@ -1,8 +1,8 @@
 <?php
 
-namespace App\UseCase\GetOrder\OutputDto;
+declare(strict_types = 1);
 
-use App\Value\Money;
+namespace App\UseCase\GetOrder\OutputDto;
 
 final readonly class LineItemDto
 {
