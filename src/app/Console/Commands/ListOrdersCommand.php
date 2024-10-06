@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\ConsoleErrorTrait;
-use App\Exceptions\UseCase\UseCaseException;
+use App\Exceptions\UseCase\AbstractUseCaseException;
 use App\UseCase\GetOrderList\GetOrderListUseCase;
 use App\UseCase\GetOrderList\OutputDto\OrderListDto;
 use Illuminate\Console\Command;
@@ -21,7 +21,7 @@ class ListOrdersCommand extends Command
     {
         try {
             $dto = $useCase->execute();
-        } catch (UseCaseException $e) {
+        } catch (AbstractUseCaseException $e) {
             $this->useCaseException($e);
         } catch (\Exception $e) {
             $this->unknownException($e);

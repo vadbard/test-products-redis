@@ -4,14 +4,16 @@ declare(strict_types = 1);
 
 namespace App\UseCase\CreateOrder;
 
-use App\Exceptions\UseCase\UseCaseException;
+use App\Exceptions\UseCase\AbstractUseCaseException;
+use App\Exceptions\UseCase\CreateOrder\DuplicateProductsCheckFailedCreateOrderUseCaseException;
+use App\Exceptions\UseCase\CreateOrder\OrderSaveErrorCreateOrderUseCaseException;
+use App\Exceptions\UseCase\CreateOrder\ProductsCountCheckFailedCreateOrderUseCaseException;
 use App\Models\Order;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\UseCase\CreateOrder\InputDto\CreateOrderInputDto;
 use App\UseCase\CreateOrder\OutputDto\CreateOrderDto;
 use App\Value\OrderId;
 use Carbon\CarbonPeriodImmutable;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 final readonly class CreateOrderUseCase
@@ -24,7 +26,7 @@ final readonly class CreateOrderUseCase
     }
 
     /**
-     * @throws UseCaseException
+     * @throws AbstractUseCaseException
      */
     public function execute(CreateOrderInputDto $dto): CreateOrderDto
     {
@@ -43,7 +45,7 @@ final readonly class CreateOrderUseCase
         try {
             $this->orderRepository->save($order);
         } catch (\Throwable $e) {
-            throw new UseCaseException('Ошибка при сохранении заказа', UseCaseException::CODE_SERVER_ERROR, $e);
+            throw new OrderSaveErrorCreateOrderUseCaseException($e);
         }
 
         return new CreateOrderDto(id: $id);
@@ -54,7 +56,7 @@ final readonly class CreateOrderUseCase
         $period = CarbonPeriodImmutable::create('10.09.2024', '10.10.2024');
 
         if ($order->getTotalQuantity() > 10 && $period->contains($order->getCreatedAt())) {
-            throw new UseCaseException('Суммарное количество всех единиц не должно превышать 10 в период с 10.09.2024 по 10.10.2024');
+            throw new ProductsCountCheckFailedCreateOrderUseCaseException();
         }
     }
 
@@ -65,7 +67,7 @@ final readonly class CreateOrderUseCase
             $key = $item->getName() . $item->getPrice();
 
             if (isset($seen[$key])) {
-                throw new UseCaseException('Дублирующиеся товары недопустимы');
+                throw new DuplicateProductsCheckFailedCreateOrderUseCaseException();
             } else {
                 $seen[$key] = true;
             }

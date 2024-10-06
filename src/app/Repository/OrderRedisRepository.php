@@ -8,11 +8,10 @@ use App\Exceptions\Repository\RepositoryException;
 use App\Models\Order;
 use App\Repository\Interfaces\OrderRepositoryInterface;
 use App\Value\OrderId;
-use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\RedisManager;
 use WayOfDev\Serializer\SerializerManager;
 
-final readonly class OrderRedisRepository implements OrderRepositoryInterface
+class OrderRedisRepository implements OrderRepositoryInterface
 {
     private const string CONNECTION_NAME = 'orders';
 

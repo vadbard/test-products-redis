@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\ConsoleErrorTrait;
-use App\Exceptions\UseCase\UseCaseException;
+use App\Exceptions\UseCase\AbstractUseCaseException;
 use App\UseCase\GetOrder\GetOrderUseCase;
 use App\UseCase\GetOrder\InputDto\GetOrderInputDto;
 use App\UseCase\GetOrder\OutputDto\GetOrderDto;
@@ -25,7 +25,7 @@ class GetOrderCommand extends Command
             $dto = $useCase->execute(new GetOrderInputDto(
                 orderId: $this->parseOrderId($this->argument('orderId')),
             ));
-        } catch (UseCaseException $e) {
+        } catch (AbstractUseCaseException $e) {
             $this->useCaseException($e);
         } catch (\Exception $e) {
             $this->unknownException($e);

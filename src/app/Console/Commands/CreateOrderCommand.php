@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Console\Commands;
 
 use App\Console\Commands\Traits\ConsoleErrorTrait;
-use App\Exceptions\UseCase\UseCaseException;
+use App\Exceptions\UseCase\AbstractUseCaseException;
 use App\UseCase\CreateOrder\CreateOrderUseCase;
 use App\UseCase\CreateOrder\InputDto\CreateOrderInputDto;
 use App\UseCase\CreateOrder\OutputDto\CreateOrderDto;
@@ -40,16 +40,16 @@ class CreateOrderCommand extends Command
             );
         }
 
-        try {
+//        try {
             $dto = $useCase->execute(new CreateOrderInputDto(
                 createdAt: $createdAt,
                 lineItems: $lineItems,
             ));
-        } catch (UseCaseException $e) {
-            $this->useCaseException($e);
-        } catch (\Exception $e) {
-            $this->unknownException($e);
-        }
+//        } catch (AbstractUseCaseException $e) {
+//            $this->useCaseException($e);
+//        } catch (\Exception $e) {
+//            $this->unknownException($e);
+//        }
 
         $this->view($dto);
     }
