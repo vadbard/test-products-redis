@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Value;
 
-readonly class Money implements \JsonSerializable
+readonly class Money
 {
     public function __construct(public int $amount)
     {
@@ -28,11 +28,6 @@ readonly class Money implements \JsonSerializable
     public function __toString(): string
     {
         return number_format($this->float(), 2, '.', '');
-    }
-
-    public function jsonSerialize(): float
-    {
-        return $this->float();
     }
 
     public function multiply(int $multiplier): self

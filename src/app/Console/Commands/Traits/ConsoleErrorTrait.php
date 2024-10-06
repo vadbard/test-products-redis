@@ -23,4 +23,11 @@ trait ConsoleErrorTrait
 
         exit(1);
     }
+
+    private function inputError(string $message): never
+    {
+        $this->error($message);
+
+        exit(1);
+    }
 }

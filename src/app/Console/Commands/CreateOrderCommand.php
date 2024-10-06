@@ -20,7 +20,7 @@ class CreateOrderCommand extends Command
 
     protected $signature = 'order:create
                             {--created_at= : Дата создания заказа в формате Y.m.d H:i:s}
-                            {--product= : Товар в формате название:цена:количество}';
+                            {--product=* : Товар в формате название:цена:количество}';
 
     public function handle(CreateOrderUseCase $useCase)
     {
@@ -61,18 +61,14 @@ class CreateOrderCommand extends Command
 
     private function parseCreatedAt(string $createdAt): DateTimeImmutable
     {
-        if (! $createdAt) {
-            $this->error('Опция --created_at является обязательной.');
-
-            exit(1);
+        if ($createdAt === '') {
+            $this->inputError('Опция --created_at является обязательной.');
         }
 
-        try {
-            $createdAt = \DateTimeImmutable::createFromFormat('Y.m.d H:i:s', $createdAt);
-        } catch (\Exception $e) {
-            $this->error('Формат даты не верен.');
+        $createdAt = \DateTimeImmutable::createFromFormat('d.m.Y H:i:s', $createdAt);
 
-            exit(1);
+        if ($createdAt === false) {
+            $this->inputError('Формат даты не верен.');
         }
 
         return $createdAt;
@@ -80,10 +76,8 @@ class CreateOrderCommand extends Command
 
     private function parseProducts(array|string $products): array
     {
-        if (empty($createdAt)) {
-            $this->error('Должен быть указан хотя бы один продукт с помощью опции --product.');
-
-            exit(1);
+        if (empty($products)) {
+            $this->inputError('Должен быть указан хотя бы один продукт с помощью опции --product.');
         }
 
         if (is_string($products)) {
@@ -98,29 +92,21 @@ class CreateOrderCommand extends Command
         $data = explode(':', $productData);
 
         if (count($data) !== 3) {
-            $this->error("Формат опции --product элемента $counter не верный");
-
-            exit(1);
+            $this->inputError("Формат опции --product элемента $counter не верный");
         }
 
         list($name, $unitPrice, $quantity) = $data;
 
-        if (! empty($name)) {
-            $this->error("Формат опции --product элемента $counter не верный: название не должно быть пустым");
-
-            exit(1);
+        if (empty($name)) {
+            $this->inputError("Формат опции --product элемента $counter не верный: название не должно быть пустым");
         }
 
         if (! is_numeric($unitPrice)) {
-            $this->error("Формат опции --product элемента $counter не верный: цена должна быть числом");
-
-            exit(1);
+            $this->inputError("Формат опции --product элемента $counter не верный: цена должна быть числом");
         }
 
         if (! is_numeric($quantity)) {
-            $this->error("Формат опции --product элемента $counter не верный: количество должна быть числом");
-
-            exit(1);
+            $this->inputError("Формат опции --product элемента $counter не верный: количество должно быть числом");
         }
 
         return [$name, (float) $unitPrice, (int) $quantity];

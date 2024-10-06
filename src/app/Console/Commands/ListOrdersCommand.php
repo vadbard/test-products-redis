@@ -33,7 +33,6 @@ class ListOrdersCommand extends Command
     private function view(OrderListDto $dto): void
     {
         $items = [];
-
         foreach ($dto->orders as $order) {
             $items[] = [
                 $order->id,

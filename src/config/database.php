@@ -126,8 +126,8 @@ return [
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
             'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
-            'serializer' => \Redis::SERIALIZER_MSGPACK,
-            'compression' => \Redis::COMPRESSION_LZ4,
+            'serializer' => \Redis::SERIALIZER_NONE,
+            'compression' => \Redis::COMPRESSION_NONE,
         ],
 
         'default' => [
@@ -146,6 +146,16 @@ return [
             'password' => env('REDIS_PASSWORD'),
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_CACHE_DB', '1'),
+        ],
+
+        'orders' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_CACHE_DB', '2'),
+            'prefix' => '',
         ],
 
     ],

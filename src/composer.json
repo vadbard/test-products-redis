@@ -11,7 +11,9 @@
         "laravel/framework": "^10.10",
         "laravel/prompts": "*",
         "laravel/sanctum": "^3.3",
-        "laravel/tinker": "^2.8"
+        "laravel/tinker": "^2.8",
+        "phpdocumentor/reflection-docblock": "^5.4",
+        "wayofdev/laravel-symfony-serializer": "^1.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
